@@ -206,7 +206,7 @@ food = {
         this.color = this.getType();
     },
     getType: function () {
-        if (game.level < 2) {
+        if (game.level < 4) {
             index = 0;
             return this.types[index];
         }
