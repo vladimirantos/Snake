@@ -4,8 +4,8 @@ function draw(x, y, w, h, color) {
 }
 ;
 
-var canvas = document.getElementById("canvas"),
-context = canvas.getContext("2d");
+var canvas = document.getElementById("canvas");
+var context = canvas.getContext("2d");
 var startX = 0;
 var startY = 0;
 var endX = 0;
@@ -14,6 +14,7 @@ var dx = 0;
 var dy = 0;
 var touchLenght = 0;
 var angle = 0;
+
 var direction = null,
         game = {
             width: null,
@@ -41,20 +42,20 @@ var direction = null,
             },
             stop: function () {
                 this.end = true;
-                this.message = "Prohrál jsi. Dosáhl jsi " + this.level + " úrovně. Tvůj výsledek je: " + this.score;
+                this.message = "Prohrál jsi. Úroveň: " + this.level + ", body: " + this.score;
             },
             reset: function () {
                 context.clearRect(0, 0, this.width, this.height);
             },
             drawScore: function () {
                 context.fillStyle = '#bbb';
-                context.font = '15px Segoe UI, sans-serif';
+                context.font = (canvas.width / 30)+'px Segoe UI, sans-serif';
                 context.textAlign = 'right';
                 context.fillText("Skóre: " + this.score, canvas.width - 30, canvas.height - 20);
             },
             drawMessage: function () {
                 context.fillStyle = '#bbb';
-                context.font = '15px Segoe UI, sans-serif';
+                context.font = (canvas.width / 30)+'px Segoe UI, sans-serif';
                 context.textAlign = 'left';
                 context.fillText(this.message, 30, canvas.height - 20);
             },
@@ -62,44 +63,6 @@ var direction = null,
                 this.fps = this.fps + 2;
                 this.level++;
             },
-//    initBarrier: function () {
-//        var sx = Math.floor(Math.random() * this.width);
-//        var sy = Math.floor(Math.random() * this.height);
-//        var size = 10;//Math.floor(Math.random() * 10) + 1;
-//        this.barrier.push({x: sx, y: sy});        
-//        var x = sx;
-//        var y = sy;
-//        var shift = 0;
-//        for (var i = 0; i < size; i++) {
-//            var direction = Math.floor(Math.random() * 4) + 1;
-//            if (direction == 1) //doleva
-//                x = sx - i*snake.size;
-//            if (direction == 2) //doprava
-//                x = sx + i*snake.size;
-//            if (direction == 3) //nahoru
-//                y = sy - i*snake.size;
-//            if (direction == 4)
-//                y = sy + i*snake.size;
-//
-//            x = Math.ceil(x);
-//            y = Math.ceil(y);
-//            
-//            if (this.check(x, y))
-//                this.barrier.push({x: x, y: sy});
-//            else
-//                i--;
-//            shift = (i + 1) / 2;
-//            //console.log("d: "+direction, "x: "+x, "y: "+y, "ok: "+this.check(x,y), "i: "+i);  
-//        }
-//        //console.log("size:"+this.barrier.length);
-//    },
-//    drawBarrier: function () {
-//        for (var i = 0; i < this.barrier.length; i++)
-//        {
-//            var b = this.barrier[i];
-//            draw(b.x, b.y, snake.size, snake.size, 'white');
-//        }
-//    },
             check: function (x, y) {
                 if (x <= 0 || x >= game.width || y <= 0 || y >= game.height)
                     return false;
@@ -141,13 +104,13 @@ snake = {
         if (this.direction == null || game.isStarted == false)
             return;
         if (this.direction == 'left')
-            this.x -= this.size + 0.5;
+            this.x -= this.size;
         else if (this.direction == 'right')
-            this.x += this.size + 0.5;
+            this.x += this.size;
         else if (this.direction == 'up')
-            this.y -= this.size + 0.5;
+            this.y -= this.size;
         else if (this.direction == 'down')
-            this.y += this.size + 0.5;
+            this.y += this.size;
         this.cells.unshift({x: this.x, y: this.y});
         this.cells.pop();
         this.check();
@@ -201,8 +164,8 @@ food = {
     color: null,
     create: function () {
         this.size = snake.size;
-        this.x = Math.ceil(Math.random() * 10) * (snake.size + 0.5) * 5 - (snake.size + 0.5) * 3;
-        this.y = Math.ceil(Math.random() * 10) * (snake.size + 0.5) * 5 - (snake.size + 0.5) * 3;
+        this.x = Math.ceil(Math.random() * 10) * (snake.size) * 5 - (snake.size) * 3;
+        this.y = Math.ceil(Math.random() * 10) * (snake.size) * 5 - (snake.size) * 3;
         this.color = this.getType();
     },
     getType: function () {
@@ -281,14 +244,14 @@ function touchStart(event) {
 ;
 
 function touchMove(event) {
-    // event.preventDefault();
+    //event.preventDefault();
     endX = event.touches[0].pageX;
     endY = event.touches[0].pageY;
 }
 ;
 
 function touchEnd(event) {
-    //  event.preventDefault();
+    // event.preventDefault();
     touchLength = Math.round(Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2)));
     getAngle();
     getDirection();
@@ -299,7 +262,7 @@ function getAngle() {
     var x = startX - endX;
     var y = endY - startY;
     distance = Math.round(Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)));
-    angle = Math.atan2(x, y); //úhel v radiánech (atan protože jsme v kartézském systému)
+    angle = Math.atan2(x, y); //úhel v radiánech
     angle = Math.round(angle * 180 / Math.PI);
     if (angle < 0) {
         angle = 360 - Math.abs(angle);
@@ -318,7 +281,11 @@ function getDirection() {
     } else {
         direction = 'right';
     }
+
     key = direction;
+    if ((startX != null && startY != null && endX == 0 && endY == 0||game.end))
+        game.start();
+    else
     if ((key != null && key != 'start') && key != inverseDirection[snake.direction]) {
         snake.direction = key;
         game.isStarted = true;
@@ -327,7 +294,6 @@ function getDirection() {
 }
 ;
 //doleva - dolu, doprava - nahoru, nahoru - doprava, dolu - doleva
-
 
 function loop() {
     if (game.end === false) {
